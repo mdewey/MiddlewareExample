@@ -7,6 +7,12 @@ const logger = (req, res, next) => {
   next()
 }
 
+// modify the request object during the pipeline
+const requestTime = (req, res, next) => {
+  req.timeRequested = new Date()
+  next()
+}
+
 // This middleware checks to see if the user
 // provided the secret. If they did, proceed with
 // the rest of processing, otherwise, just send them
@@ -30,11 +36,12 @@ const authenticate = (req, res, next) => {
 
 // register (not run) the middlware to the pipeline
 app.use(logger)
+app.use(requestTime)
 
 // define a home page
 app.get("/", (req, res) => {
   console.log("home page was here!")
-  res.send("Hello world")
+  res.send("Hello world, you are here at " + req.timeRequested)
 });
 
 // Everything below here will need the secret
